@@ -1,0 +1,52 @@
+//client 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_OPTION_LEN 50
+
+int main(int argc, char *argv[]) {
+    char author[MAX_OPTION_LEN] = "";  // Variabile per memorizzare l'autore
+    char title[MAX_OPTION_LEN] = "";   // Variabile per memorizzare il titolo
+    int prestito = 0;                  // Variabile per verificare se l'opzione -p è stata specificata
+
+    // Loop per analizzare le opzioni passate dalla linea di comando
+    for (int i = 1; i < argc; i++) {
+        if (strncmp(argv[i], "--author=", 9) == 0) {
+            strncpy(author, argv[i] + 9, MAX_OPTION_LEN - 1);
+            author[MAX_OPTION_LEN - 1] = '\0';
+        } else if (strncmp(argv[i], "--title=", 8) == 0) {
+            strncpy(title, argv[i] + 8, MAX_OPTION_LEN - 1);
+            title[MAX_OPTION_LEN - 1] = '\0';
+        } else if (strcmp(argv[i], "-p") == 0) {
+            prestito = 1;
+        } else {
+            printf("Opzione non riconosciuta: %s\n", argv[i]);
+            return 1;
+        }
+    }
+
+    // Verifica che almeno una delle opzioni lunghe sia stata specificata
+    if (strlen(author) == 0 && strlen(title) == 0) {
+        printf("Deve essere specificata almeno un'opzione lunga (--author o --title)\n");
+        return 1;
+    }
+
+    // Eseguire la connessione ai server e l'interrogazione delle biblioteche qui
+    // (incluso il codice per richiedere il prestito, se necessario)
+
+    // Stampa dei risultati dei record trovati
+    printf("Risultati della ricerca:\n");
+    if (strlen(author) > 0) {
+        printf("Autore: %s\n", author);
+    }
+    if (strlen(title) > 0) {
+        printf("Titolo: %s\n", title);
+    }
+    if (prestito) {
+        printf("Richiesta di prestito effettuata.\n");
+    }
+
+    return 0;
+}
