@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+#define MAX_OPTION_LEN 50
+#define MAX_DATA_LEN 1024
+
+// Definizione dei tipi di messaggio
+#define MSG_QUERY 'Q'
+#define MSG_LOAN 'L'
+#define MSG_RECORD 'R'
+#define MSG_NO 'N'
+#define MSG_ERROR 'E'
+
+// Funzione per inviare un messaggio al server
+void send_message(int socket, char type, const char *data) {
+    unsigned int length = strlen(data);
+    
+    // Invio il tipo di messaggio
+    send(socket, &type, sizeof(char), 0);
+    
+    // Invio la lunghezza dei dati
+    send(socket, &length, sizeof(unsigned int), 0);
+    
+    // Invio i dati
+    send(socket, data, length, 0);
+}
+
+// Funzione per ricevere un messaggio dal server
+void receive_message(int socket, char *type, char *data) {
+    unsigned int length;
+    
+    // Ricevo il tipo di messaggio
+    recv(socket, type, sizeof(char), 0);
+    
+    // Ricevo la lunghezza dei dati
+    recv(socket, &length, sizeof(unsigned int), 0);
+    
+    // Ricevo i dati
+    recv(socket, data, length, 0);
+    data[length] = '\0';  // Aggiungo il terminatore null alla fine dei dati
+}
+
+int main(int argc, char *argv[]) {
+    // ... (Codice precedente per analizzare le opzioni)
+
+    // Connessione al server (sostituisci con le tue informazioni)
+    int server_socket;
+    struct sockaddr_in server_addr;
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    
+    // Imposta l'indirizzo del server
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(8080);  // Sostituisci con la porta del server
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");  // Sostituisci con l'indirizzo del server
+    
+    // Connetti al server
+    connect(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr));
+
+    // Creazione della richiesta
+    char request[MAX_DATA_LEN];
+    snprintf(request, sizeof(request), "campo1: valore1;campo2: valore2;...");  // Sostituisci con la tua richiesta
+
+    // Invia la richiesta al server
+    send_message(server_socket, MSG_QUERY, request);
+
+    // Ricevi la risposta dal server
+    char response_type;
+    char response_data[MAX_DATA_LEN];
+    receive_message(server_socket, &response_type, response_data);
+
+    // Gestisci la risposta in base al tipo di messaggio
+    switch (response_type) {
+        case MSG_RECORD:
+            printf("Record ricevuto:\n%s\n", response_data);
+            break;
+        case MSG_NO:
+            printf("Nessun record trovato.\n");
+            break;
+        case MSG_ERROR:
+            printf("Errore: %s\n", response_data);
+            break;
+        default:
+            printf("Messaggio sconosciuto ricevuto.\n");
+    }
+
+    // Chiusura della connessione
+    close(server_socket);
+
+    return 0;
+}
