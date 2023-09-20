@@ -1,0 +1,46 @@
+#!/bin/bash
+
+//Funzione per stampare il numero di richieste o prestiti da un file di log
+function print_count() {
+    local log_file=$1
+    local option=$2
+
+    # Controlla se l'opzione è --query o --loan
+    if [[ $option == "--query" ]]; then
+        local count=$(grep -c "QUERY" "$log_file")
+    elif [[ $option == "--loan" ]]; then
+        local count=$(grep -c "LOAN" "$log_file")
+    fi
+
+    echo "$log_file $count"
+}
+
+//Controllo degli argomenti passati allo script
+if [[ $# -lt 2 ]]; then
+    echo "Utilizzo: $0 --query|--loan log1 ... logN"
+    exit 1
+fi
+
+option=$1
+shift
+
+//Scorrere tutti i file di log specificati come argomenti
+for log_file in "$@"; do
+    # Controlla se il file di log esiste
+    if [[ ! -f "$log_file" ]]; then
+        echo "File non trovato: $log_file"
+        continue
+    fi
+ //Stampa il numero di richieste o prestiti presenti nel file di log
+    print_count "$log_file" "$option"
+done
+
+# Se l'opzione è --query o --loan, calcola il valore complessivo (somma dei valori nei file di log)
+if [[ $option == "--query" || $option == "--loan" ]]; then
+    total=0
+    for log_file in "$@"; do
+        count=$(grep -c "$option" "$log_file")
+        ((total += count))
+    done
+    echo "$option $total"
+fi
