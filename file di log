@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LOG_ENTRY_LENGTH 500
+
+// Funzione per registrare una richiesta di query nel file di log
+
+void logQuery(FILE* log_file, int num_results, struct Record* results, int total_records_sent) {
+fprintf(log_file, "QUERY %d\n", num_results);
+    if (num_results > 0) {
+        for (int i = 0; i < num_results; i++) {
+   fprintf(log_file, "autore: %s; titolo: %s; editore: %s; anno: %s; ... (aggiungere gli altri campi);\n",
+                    results[i].field_value[0], results[i].field_value[1], results[i].field_value[2], results[i].field_value[3]);
+
+  // Includere tutti i campi necessari con i rispettivi valori per ogni record
+        }
+    }
+    fprintf(log_file, "QUERY %d\n", total_records_sent);
+}
+
+
+// Funzione per registrare una richiesta di prestito nel file di log
+void logLoan(FILE* log_file, int loan_granted, struct Record* result) {
+    fprintf(log_file, "LOAN %d\n", loan_granted);
+    if (loan_granted) {
+        fprintf(log_file, "autore: %s; titolo: %s; editore: %s; anno: %s; prestito: %s; ... (aggiungere gli altri campi);\n",
+                result->field_value[0], result->field_value[1], result->field_value[2], result->field_value[3], result->field_value[4]);
+        // Includere tutti i campi necessari con i rispettivi valori per il record concesso in prestito
+    }
+}
