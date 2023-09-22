@@ -135,6 +135,5 @@ void signalHandler(int signum) {
         // Analizziamo il record e otteniamo la struttura "Record"
         record = parseRecord(record_str);
         
-        
-        //finire il main 
     
+    // codice server(?)
