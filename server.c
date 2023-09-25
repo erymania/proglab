@@ -9,7 +9,7 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <errno.h>
-#include "workers.h"
+#include "server.h"
 #define UNIX_PATH_MAX 256
 #include "list.h"
 #include "collector.h"
@@ -96,11 +96,9 @@ void signalHandler(int signum) {
         }
 
         switch(sig) {
-        
             case SIGINT:
             case SIGTERM:
-         
-            default:
+           default:
                 return NULL;
         }
     }
