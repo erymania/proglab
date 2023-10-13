@@ -9,7 +9,7 @@ server: server.c
 
 bibaccess: bibaccess.c
 	$(CC) $(CFLAGS) -o bibaccess bibaccess.c
-
+l
 clean:
 	rm -f server bibaccess
 
